@@ -41,6 +41,20 @@ public class GlobalExceptionHandler {
         return problem;
     }
 
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ProblemDetail handleCredenciales(InvalidCredentialsException ex) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, ex.getMessage());
+        problem.setTitle("Credenciales inválidas");
+        return problem;
+    }
+
+    @ExceptionHandler(AccountDisabledException.class)
+    public ProblemDetail handleCuentaDesactivada(AccountDisabledException ex) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, ex.getMessage());
+        problem.setTitle("Cuenta no activa");
+        return problem;
+    }
+
     @ExceptionHandler(InvalidPasswordException.class)
     public ProblemDetail handleContrasena(InvalidPasswordException ex) {
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
