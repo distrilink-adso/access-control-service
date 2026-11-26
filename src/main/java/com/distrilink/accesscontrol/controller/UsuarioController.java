@@ -49,7 +49,7 @@ public class UsuarioController {
 
     @PostMapping
     @Operation(summary = "Registrar un usuario (público)",
-            description = "Crea la cuenta ACTIVO con la contraseña cifrada. 409 si el correo ya existe")
+            description = "Crea la cuenta ACTIVE con la contraseña cifrada. 409 si el correo ya existe")
     public ResponseEntity<ApiResponse<UsuarioResponse>> create(@Valid @RequestBody UsuarioRequest request) {
         UsuarioResponse created = service.create(request);
         return ResponseEntity.created(URI.create("/api/users/" + created.id())).body(ApiResponse.ok(created));
@@ -60,10 +60,10 @@ public class UsuarioController {
     @Operation(summary = "Listar usuarios (solo DISTRIBUTOR)", description = "Los filtros por rol y estado son opcionales")
     public ResponseEntity<ApiResponse<List<UsuarioResponse>>> findAll(
             @Parameter(description = "Filtrar por rol", example = "CUSTOMER")
-            @RequestParam(required = false) UsuarioRol rol,
-            @Parameter(description = "Filtrar por estado", example = "ACTIVO")
-            @RequestParam(required = false) UsuarioEstado estado) {
-        return ResponseEntity.ok(ApiResponse.ok(service.findAll(rol, estado)));
+            @RequestParam(required = false) UsuarioRol role,
+            @Parameter(description = "Filtrar por estado", example = "ACTIVE")
+            @RequestParam(required = false) UsuarioEstado status) {
+        return ResponseEntity.ok(ApiResponse.ok(service.findAll(role, status)));
     }
 
     @GetMapping("/{id}")
@@ -87,7 +87,7 @@ public class UsuarioController {
     @DeleteMapping("/{id}")
     @SecurityRequirement(name = "bearerAuth")
     @Operation(summary = "Desactivar mi cuenta",
-            description = "No borra el registro: cambia el estado a INACTIVO (RF1.12). Responde 200 con data=null")
+            description = "No borra el registro: cambia el estado a INACTIVE (RF1.12). Responde 200 con data=null")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id, @AuthenticationPrincipal Jwt jwt) {
         CurrentUser.requireSelf(id, jwt);
         service.delete(id);

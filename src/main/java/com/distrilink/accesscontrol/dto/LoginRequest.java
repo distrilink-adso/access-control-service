@@ -9,12 +9,12 @@ import jakarta.validation.constraints.NotBlank;
 public record LoginRequest(
 
         @Schema(description = "Correo registrado", example = "tienda@correo.com")
-        @NotBlank(message = "correo es obligatorio")
-        @Email(message = "correo no tiene un formato válido")
-        String correo,
+        @NotBlank(message = "email es obligatorio")
+        @Email(message = "email no tiene un formato válido")
+        String email,
 
         @Schema(description = "Contraseña", example = "Clave1234")
-        @NotBlank(message = "contrasena es obligatoria")
-        String contrasena
+        @NotBlank(message = "password es obligatoria")
+        String password
 ) {
 }

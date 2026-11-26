@@ -33,7 +33,7 @@ public class AuthController {
 
     @PostMapping("/login")
     @Operation(summary = "Iniciar sesión",
-            description = "Devuelve el JWT. 401 si el correo o la contraseña son incorrectos; 403 si la cuenta no está ACTIVO")
+            description = "Devuelve el JWT. 401 si el correo o la contraseña son incorrectos; 403 si la cuenta no está ACTIVE")
     public ResponseEntity<ApiResponse<LoginResponse>> login(@Valid @RequestBody LoginRequest request) {
         return ResponseEntity.ok(ApiResponse.ok(authService.login(request)));
     }

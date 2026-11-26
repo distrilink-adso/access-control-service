@@ -22,7 +22,7 @@ public final class ErrorCode {
     public static final String EMAIL_ALREADY_REGISTERED = "EMAIL_ALREADY_REGISTERED"; // 409: correo repetido (RF1.2)
     public static final String INVALID_PASSWORD = "INVALID_PASSWORD";                 // 400: contraseña no cifrable
     public static final String INVALID_CREDENTIALS = "INVALID_CREDENTIALS";           // 401: correo o contraseña incorrectos
-    public static final String ACCOUNT_DISABLED = "ACCOUNT_DISABLED";                 // 403: cuenta INACTIVO o BLOQUEADO
+    public static final String ACCOUNT_DISABLED = "ACCOUNT_DISABLED";                 // 403: cuenta INACTIVE o LOCKED
 
     private ErrorCode() {
     }

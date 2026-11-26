@@ -56,16 +56,16 @@ class UsuarioControllerTest {
 
     private static final String VALID_JSON = """
             {
-              "nombre": "Tienda La Esquina",
-              "correo": "tienda@correo.com",
-              "contrasena": "Clave1234",
-              "rol": "CUSTOMER"
+              "name": "Tienda La Esquina",
+              "email": "tienda@correo.com",
+              "password": "Clave1234",
+              "role": "CUSTOMER"
             }
             """;
 
     private UsuarioResponse response() {
         return new UsuarioResponse(1L, "Tienda La Esquina", "tienda@correo.com", UsuarioRol.CUSTOMER,
-                UsuarioEstado.ACTIVO, LocalDateTime.now(), LocalDateTime.now());
+                UsuarioEstado.ACTIVE, LocalDateTime.now(), LocalDateTime.now());
     }
 
     /** Simula que inició sesión el usuario con ese id y ese rol. */
@@ -85,8 +85,11 @@ class UsuarioControllerTest {
                 .andExpect(header().string("Location", "/api/users/1"))
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.id").value(1))
-                .andExpect(jsonPath("$.data.rol").value("CUSTOMER"))
-                .andExpect(jsonPath("$.data.contrasena").doesNotExist())
+                .andExpect(jsonPath("$.data.role").value("CUSTOMER"))
+                .andExpect(jsonPath("$.data.status").value("ACTIVE"))
+                .andExpect(jsonPath("$.data.createdAt").exists())
+                .andExpect(jsonPath("$.data.correo").doesNotExist())
+                .andExpect(jsonPath("$.data.password").doesNotExist())
                 .andExpect(jsonPath("$.error").value(nullValue()))
                 .andExpect(jsonPath("$.meta.apiVersion").value("v1.0"));
     }
@@ -94,22 +97,22 @@ class UsuarioControllerTest {
     @Test
     void registro_conVariosCamposInvalidos_devuelve400ConCadaCampo() throws Exception {
         String invalid = """
-                { "nombre": "", "correo": "esto-no-es-un-correo", "contrasena": "corta1", "rol": "CUSTOMER" }
+                { "name": "", "email": "esto-no-es-un-correo", "password": "corta1", "role": "CUSTOMER" }
                 """;
 
         mvc.perform(post("/api/users").contentType(MediaType.APPLICATION_JSON).content(invalid))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.success").value(false))
                 .andExpect(jsonPath("$.error.code").value("VALIDATION_ERROR"))
-                .andExpect(jsonPath("$.error.details.nombre").exists())
-                .andExpect(jsonPath("$.error.details.correo").exists())
-                .andExpect(jsonPath("$.error.details.contrasena").exists());
+                .andExpect(jsonPath("$.error.details.name").exists())
+                .andExpect(jsonPath("$.error.details.email").exists())
+                .andExpect(jsonPath("$.error.details.password").exists());
     }
 
     @Test
     void registro_rolInexistente_devuelve400MalformedRequest() throws Exception {
         String invalid = """
-                { "nombre": "Tienda", "correo": "tienda@correo.com", "contrasena": "Clave1234", "rol": "ADMIN" }
+                { "name": "Tienda", "email": "tienda@correo.com", "password": "Clave1234", "role": "ADMIN" }
                 """;
 
         mvc.perform(post("/api/users").contentType(MediaType.APPLICATION_JSON).content(invalid))
@@ -145,7 +148,7 @@ class UsuarioControllerTest {
         mvc.perform(get("/api/users/1").with(usuario(1, "CUSTOMER")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data.correo").value("tienda@correo.com"));
+                .andExpect(jsonPath("$.data.email").value("tienda@correo.com"));
     }
 
     @Test

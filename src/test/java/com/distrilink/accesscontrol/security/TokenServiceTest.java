@@ -34,7 +34,7 @@ class TokenServiceTest {
         u.setNombre("Tienda Don Pepe");
         u.setCorreo("tienda@donpepe.com");
         u.setRol(UsuarioRol.CUSTOMER);
-        u.setEstado(UsuarioEstado.ACTIVO);
+        u.setEstado(UsuarioEstado.ACTIVE);
         return u;
     }
 

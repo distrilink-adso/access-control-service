@@ -27,15 +27,15 @@ public class AuthService {
 
     @Transactional(readOnly = true)
     public LoginResponse login(LoginRequest request) {
-        String correo = request.correo().trim().toLowerCase(Locale.ROOT);
+        String correo = request.email().trim().toLowerCase(Locale.ROOT);
 
         // Mismo error si el correo no existe o si la contraseña no coincide: no se revela qué correos están registrados.
         Usuario usuario = repository.findByCorreo(correo)
                 .orElseThrow(InvalidCredentialsException::new);
-        if (!passwordEncoder.matches(request.contrasena(), usuario.getContrasena())) {
+        if (!passwordEncoder.matches(request.password(), usuario.getContrasena())) {
             throw new InvalidCredentialsException();
         }
-        if (usuario.getEstado() != UsuarioEstado.ACTIVO) {
+        if (usuario.getEstado() != UsuarioEstado.ACTIVE) {
             throw new AccountDisabledException(usuario.getEstado());
         }
 

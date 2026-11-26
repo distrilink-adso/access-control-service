@@ -16,6 +16,6 @@ public record LoginResponse(
         long expiresIn,
 
         @Schema(description = "Usuario que inició sesión")
-        UsuarioResponse usuario
+        UsuarioResponse user
 ) {
 }

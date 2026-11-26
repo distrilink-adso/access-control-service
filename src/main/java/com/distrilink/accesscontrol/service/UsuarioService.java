@@ -30,19 +30,19 @@ public class UsuarioService {
     private final UsuarioRepository repository;
     private final PasswordEncoder passwordEncoder;
 
-    /** RF1.1 + RF1.2 + RF1.3: registra un usuario ACTIVO, con correo único y contraseña cifrada. */
+    /** RF1.1 + RF1.2 + RF1.3: registra un usuario ACTIVE, con correo único y contraseña cifrada. */
     @Transactional
     public UsuarioResponse create(UsuarioRequest request) {
-        String correo = normalizar(request.correo());
+        String correo = normalizar(request.email());
         if (repository.existsByCorreo(correo)) {
             throw new EmailAlreadyRegisteredException(correo);
         }
         Usuario usuario = new Usuario();
-        usuario.setNombre(request.nombre().trim());
+        usuario.setNombre(request.name().trim());
         usuario.setCorreo(correo);
-        usuario.setContrasena(cifrar(request.contrasena()));
-        usuario.setRol(request.rol());
-        usuario.setEstado(UsuarioEstado.ACTIVO);
+        usuario.setContrasena(cifrar(request.password()));
+        usuario.setRol(request.role());
+        usuario.setEstado(UsuarioEstado.ACTIVE);
         return UsuarioResponse.from(repository.save(usuario));
     }
 
@@ -71,16 +71,16 @@ public class UsuarioService {
     @Transactional
     public UsuarioResponse update(Long id, UsuarioUpdateRequest request) {
         Usuario usuario = getOrThrow(id);
-        String correo = normalizar(request.correo());
+        String correo = normalizar(request.email());
         if (repository.existsByCorreoAndIdNot(correo, id)) {
             throw new EmailAlreadyRegisteredException(correo);
         }
-        usuario.setNombre(request.nombre().trim());
+        usuario.setNombre(request.name().trim());
         usuario.setCorreo(correo);
-        usuario.setRol(request.rol());
-        usuario.setEstado(request.estado());
-        if (request.contrasena() != null) {
-            usuario.setContrasena(cifrar(request.contrasena()));
+        usuario.setRol(request.role());
+        usuario.setEstado(request.status());
+        if (request.password() != null) {
+            usuario.setContrasena(cifrar(request.password()));
         }
         return UsuarioResponse.from(repository.save(usuario));
     }
@@ -92,7 +92,7 @@ public class UsuarioService {
     @Transactional
     public void delete(Long id) {
         Usuario usuario = getOrThrow(id);
-        usuario.setEstado(UsuarioEstado.INACTIVO);
+        usuario.setEstado(UsuarioEstado.INACTIVE);
         repository.save(usuario);
     }
 

@@ -70,7 +70,7 @@ public class Usuario {
         }
         fechaActualizacion = ahora;
         if (estado == null) {
-            estado = UsuarioEstado.ACTIVO;
+            estado = UsuarioEstado.ACTIVE;
         }
     }
 
