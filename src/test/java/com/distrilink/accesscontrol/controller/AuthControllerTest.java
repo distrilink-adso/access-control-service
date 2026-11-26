@@ -48,12 +48,12 @@ class AuthControllerTest {
     private UsuarioService usuarioService;
 
     private static final String LOGIN_JSON = """
-            { "correo": "tienda@correo.com", "contrasena": "Clave1234" }
+            { "email": "tienda@correo.com", "password": "Clave1234" }
             """;
 
     private UsuarioResponse usuario() {
         return new UsuarioResponse(1L, "Tienda La Esquina", "tienda@correo.com", UsuarioRol.CUSTOMER,
-                UsuarioEstado.ACTIVO, LocalDateTime.now(), LocalDateTime.now());
+                UsuarioEstado.ACTIVE, LocalDateTime.now(), LocalDateTime.now());
     }
 
     @Test
@@ -66,7 +66,9 @@ class AuthControllerTest {
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.accessToken").value("eyJ.token.firmado"))
                 .andExpect(jsonPath("$.data.tokenType").value("Bearer"))
-                .andExpect(jsonPath("$.data.usuario.contrasena").doesNotExist());
+                .andExpect(jsonPath("$.data.user.email").value("tienda@correo.com"))
+                .andExpect(jsonPath("$.data.user.status").value("ACTIVE"))
+                .andExpect(jsonPath("$.data.user.password").doesNotExist());
     }
 
     @Test
@@ -82,7 +84,7 @@ class AuthControllerTest {
 
     @Test
     void login_cuentaInactiva_devuelve403AccountDisabled() throws Exception {
-        when(authService.login(any(LoginRequest.class))).thenThrow(new AccountDisabledException(UsuarioEstado.INACTIVO));
+        when(authService.login(any(LoginRequest.class))).thenThrow(new AccountDisabledException(UsuarioEstado.INACTIVE));
 
         mvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON).content(LOGIN_JSON))
                 .andExpect(status().isForbidden())
@@ -91,9 +93,9 @@ class AuthControllerTest {
 
     @Test
     void login_sinCorreo_devuelve400() throws Exception {
-        mvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON).content("{ \"contrasena\": \"x\" }"))
+        mvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON).content("{ \"password\": \"x\" }"))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error.details.correo").exists());
+                .andExpect(jsonPath("$.error.details.email").exists());
     }
 
     @Test

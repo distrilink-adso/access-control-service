@@ -39,12 +39,12 @@ public class GlobalExceptionHandler {
                 "Hay datos inválidos en la petición", details);
     }
 
-    /** 400: JSON mal formado o un valor que no existe en un enum (por ejemplo, rol "ADMIN"). */
+    /** 400: JSON mal formado o un valor que no existe en un enum (por ejemplo, role "ADMIN"). */
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ApiResponse<Void>> handleUnreadable(HttpMessageNotReadableException ex) {
         return build(HttpStatus.BAD_REQUEST, ErrorCode.MALFORMED_REQUEST,
                 "El cuerpo de la petición no es válido. Revisa el JSON y los valores permitidos "
-                        + "(rol: CUSTOMER o DISTRIBUTOR; estado: ACTIVO, INACTIVO o BLOQUEADO)", null);
+                        + "(role: CUSTOMER o DISTRIBUTOR; status: ACTIVE, INACTIVE o LOCKED)", null);
     }
 
     /** 400: un parámetro de la URL no tiene el tipo esperado (por ejemplo, /api/users/abc). */
@@ -59,7 +59,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidPasswordException.class)
     public ResponseEntity<ApiResponse<Void>> handleInvalidPassword(InvalidPasswordException ex) {
         return build(HttpStatus.BAD_REQUEST, ErrorCode.INVALID_PASSWORD, ex.getMessage(),
-                Map.of("contrasena", ex.getMessage()));
+                Map.of("password", ex.getMessage()));
     }
 
     /** 401: correo o contraseña incorrectos en el login. */
@@ -68,7 +68,7 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.UNAUTHORIZED, ErrorCode.INVALID_CREDENTIALS, ex.getMessage(), null);
     }
 
-    /** 403: la cuenta existe pero está INACTIVO o BLOQUEADO. */
+    /** 403: la cuenta existe pero está INACTIVE o LOCKED. */
     @ExceptionHandler(AccountDisabledException.class)
     public ResponseEntity<ApiResponse<Void>> handleAccountDisabled(AccountDisabledException ex) {
         return build(HttpStatus.FORBIDDEN, ErrorCode.ACCOUNT_DISABLED, ex.getMessage(), null);
@@ -103,7 +103,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(EmailAlreadyRegisteredException.class)
     public ResponseEntity<ApiResponse<Void>> handleEmailDuplicado(EmailAlreadyRegisteredException ex) {
         return build(HttpStatus.CONFLICT, ErrorCode.EMAIL_ALREADY_REGISTERED, ex.getMessage(),
-                Map.of("correo", ex.getMessage()));
+                Map.of("email", ex.getMessage()));
     }
 
     /** 409: red de seguridad si dos registros simultáneos con el mismo correo chocan en la restricción UNIQUE. */

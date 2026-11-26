@@ -71,9 +71,9 @@ class UsuarioServiceTest {
         verify(repository).save(captor.capture());
         assertThat(captor.getValue().getContrasena()).isEqualTo("$2a$10$hashNuevo").isNotEqualTo("Clave1234");
         assertThat(response.id()).isEqualTo(1L);
-        assertThat(response.estado()).isEqualTo(UsuarioEstado.ACTIVO);
-        assertThat(response.correo()).isEqualTo("tienda@correo.com");
-        assertThat(response.nombre()).isEqualTo("Tienda La Esquina");
+        assertThat(response.status()).isEqualTo(UsuarioEstado.ACTIVE);
+        assertThat(response.email()).isEqualTo("tienda@correo.com");
+        assertThat(response.name()).isEqualTo("Tienda La Esquina");
     }
 
     @Test
@@ -90,7 +90,7 @@ class UsuarioServiceTest {
     @Test
     void findAll_conRolFiltraPorRol() {
         when(repository.findByRol(UsuarioRol.CUSTOMER))
-                .thenReturn(List.of(saved(1L, UsuarioRol.CUSTOMER, UsuarioEstado.ACTIVO)));
+                .thenReturn(List.of(saved(1L, UsuarioRol.CUSTOMER, UsuarioEstado.ACTIVE)));
 
         List<UsuarioResponse> result = service.findAll(UsuarioRol.CUSTOMER, null);
 
@@ -101,8 +101,8 @@ class UsuarioServiceTest {
     @Test
     void findAll_sinFiltrosDevuelveTodos() {
         when(repository.findAll()).thenReturn(List.of(
-                saved(1L, UsuarioRol.CUSTOMER, UsuarioEstado.ACTIVO),
-                saved(2L, UsuarioRol.DISTRIBUTOR, UsuarioEstado.INACTIVO)));
+                saved(1L, UsuarioRol.CUSTOMER, UsuarioEstado.ACTIVE),
+                saved(2L, UsuarioRol.DISTRIBUTOR, UsuarioEstado.INACTIVE)));
 
         assertThat(service.findAll(null, null)).hasSize(2);
     }
@@ -118,30 +118,30 @@ class UsuarioServiceTest {
 
     @Test
     void update_sinContrasenaConservaLaActual() {
-        when(repository.findById(1L)).thenReturn(Optional.of(saved(1L, UsuarioRol.CUSTOMER, UsuarioEstado.ACTIVO)));
+        when(repository.findById(1L)).thenReturn(Optional.of(saved(1L, UsuarioRol.CUSTOMER, UsuarioEstado.ACTIVE)));
         when(repository.existsByCorreoAndIdNot("nuevo@correo.com", 1L)).thenReturn(false);
         when(repository.save(any(Usuario.class))).thenAnswer(inv -> inv.getArgument(0));
         UsuarioUpdateRequest request = new UsuarioUpdateRequest("Nuevo Nombre", "NUEVO@correo.com", null,
-                UsuarioRol.DISTRIBUTOR, UsuarioEstado.BLOQUEADO);
+                UsuarioRol.DISTRIBUTOR, UsuarioEstado.LOCKED);
 
         UsuarioResponse response = service.update(1L, request);
 
-        assertThat(response.nombre()).isEqualTo("Nuevo Nombre");
-        assertThat(response.correo()).isEqualTo("nuevo@correo.com");
-        assertThat(response.rol()).isEqualTo(UsuarioRol.DISTRIBUTOR);
-        assertThat(response.estado()).isEqualTo(UsuarioEstado.BLOQUEADO);
+        assertThat(response.name()).isEqualTo("Nuevo Nombre");
+        assertThat(response.email()).isEqualTo("nuevo@correo.com");
+        assertThat(response.role()).isEqualTo(UsuarioRol.DISTRIBUTOR);
+        assertThat(response.status()).isEqualTo(UsuarioEstado.LOCKED);
         verify(passwordEncoder, never()).encode(any());
     }
 
     @Test
     void update_conContrasenaLaCifraDeNuevo() {
-        Usuario existente = saved(1L, UsuarioRol.CUSTOMER, UsuarioEstado.ACTIVO);
+        Usuario existente = saved(1L, UsuarioRol.CUSTOMER, UsuarioEstado.ACTIVE);
         when(repository.findById(1L)).thenReturn(Optional.of(existente));
         when(repository.existsByCorreoAndIdNot("tienda@correo.com", 1L)).thenReturn(false);
         when(passwordEncoder.encode("OtraClave99")).thenReturn("$2a$10$hashOtro");
         when(repository.save(any(Usuario.class))).thenAnswer(inv -> inv.getArgument(0));
         UsuarioUpdateRequest request = new UsuarioUpdateRequest("Tienda La Esquina", "tienda@correo.com",
-                "OtraClave99", UsuarioRol.CUSTOMER, UsuarioEstado.ACTIVO);
+                "OtraClave99", UsuarioRol.CUSTOMER, UsuarioEstado.ACTIVE);
 
         service.update(1L, request);
 
@@ -150,10 +150,10 @@ class UsuarioServiceTest {
 
     @Test
     void update_correoDeOtroUsuarioLanzaExcepcionYNoGuarda() {
-        when(repository.findById(1L)).thenReturn(Optional.of(saved(1L, UsuarioRol.CUSTOMER, UsuarioEstado.ACTIVO)));
+        when(repository.findById(1L)).thenReturn(Optional.of(saved(1L, UsuarioRol.CUSTOMER, UsuarioEstado.ACTIVE)));
         when(repository.existsByCorreoAndIdNot("ocupado@correo.com", 1L)).thenReturn(true);
         UsuarioUpdateRequest request = new UsuarioUpdateRequest("Tienda", "ocupado@correo.com", null,
-                UsuarioRol.CUSTOMER, UsuarioEstado.ACTIVO);
+                UsuarioRol.CUSTOMER, UsuarioEstado.ACTIVE);
 
         assertThatThrownBy(() -> service.update(1L, request)).isInstanceOf(EmailAlreadyRegisteredException.class);
         verify(repository, never()).save(any());
@@ -161,13 +161,13 @@ class UsuarioServiceTest {
 
     @Test
     void delete_desactivaLaCuentaSinBorrarElRegistro() {
-        Usuario existente = saved(1L, UsuarioRol.CUSTOMER, UsuarioEstado.ACTIVO);
+        Usuario existente = saved(1L, UsuarioRol.CUSTOMER, UsuarioEstado.ACTIVE);
         when(repository.findById(1L)).thenReturn(Optional.of(existente));
         when(repository.save(any(Usuario.class))).thenAnswer(inv -> inv.getArgument(0));
 
         service.delete(1L);
 
-        assertThat(existente.getEstado()).isEqualTo(UsuarioEstado.INACTIVO);
+        assertThat(existente.getEstado()).isEqualTo(UsuarioEstado.INACTIVE);
         verify(repository, never()).delete(any());
     }
 
