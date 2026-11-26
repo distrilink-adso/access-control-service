@@ -33,7 +33,7 @@ class TokenServiceTest {
         u.setId(15L);
         u.setNombre("Tienda Don Pepe");
         u.setCorreo("tienda@donpepe.com");
-        u.setRol(UsuarioRol.CLIENTE);
+        u.setRol(UsuarioRol.CUSTOMER);
         u.setEstado(UsuarioEstado.ACTIVO);
         return u;
     }
@@ -45,7 +45,7 @@ class TokenServiceTest {
         assertThat(jwt.getSubject()).isEqualTo("15");
         assertThat(jwt.getClaimAsString("email")).isEqualTo("tienda@donpepe.com");
         assertThat(jwt.getClaimAsString("name")).isEqualTo("Tienda Don Pepe");
-        assertThat(jwt.getClaimAsString("role")).isEqualTo("CLIENTE");
+        assertThat(jwt.getClaimAsString("role")).isEqualTo("CUSTOMER");
         assertThat(jwt.getClaimAsString("iss")).isEqualTo("distrilink-access-control");
         assertThat(jwt.getHeaders().get("alg")).isEqualTo("RS256");
         assertThat(jwt.getExpiresAt()).isAfter(jwt.getIssuedAt());

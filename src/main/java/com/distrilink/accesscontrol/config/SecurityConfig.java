@@ -19,7 +19,7 @@ import org.springframework.security.web.SecurityFilterChain;
  *
  * PÚBLICO (sin token):  registro, login, llave pública, Swagger y health.
  * CON TOKEN:            todo lo demás de /api/**.
- * SOLO DISTRIBUIDOR:    listar usuarios (ejemplo de regla por rol).
+ * SOLO DISTRIBUTOR:    listar usuarios (ejemplo de regla por rol).
  */
 @Configuration
 @EnableWebSecurity
@@ -41,7 +41,7 @@ public class SecurityConfig {
                         .requestMatchers("/.well-known/jwks.json").permitAll()             // llave pública
                         .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/actuator/health").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/users").hasRole("DISTRIBUIDOR")
+                        .requestMatchers(HttpMethod.GET, "/api/users").hasRole("DISTRIBUTOR")
                         .anyRequest().authenticated())
                 // Valida el header "Authorization: Bearer <token>" con la llave pública (JwtKeyConfig)
                 .oauth2ResourceServer(oauth -> oauth
@@ -54,7 +54,7 @@ public class SecurityConfig {
         return http.build();
     }
 
-    /** Convierte el claim "role" del token (CLIENTE / DISTRIBUIDOR) en ROLE_CLIENTE / ROLE_DISTRIBUIDOR. */
+    /** Convierte el claim "role" del token (CUSTOMER / DISTRIBUTOR) en ROLE_CUSTOMER / ROLE_DISTRIBUTOR. */
     @Bean
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtGrantedAuthoritiesConverter roles = new JwtGrantedAuthoritiesConverter();

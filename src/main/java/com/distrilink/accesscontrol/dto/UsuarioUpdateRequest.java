@@ -30,8 +30,8 @@ public record UsuarioUpdateRequest(
                 message = "contrasena debe tener entre 8 y 72 caracteres, con letras y números")
         String contrasena,
 
-        @Schema(description = "Tipo de perfil", example = "CLIENTE")
-        @NotNull(message = "rol es obligatorio (CLIENTE o DISTRIBUIDOR)")
+        @Schema(description = "Tipo de perfil", example = "CUSTOMER")
+        @NotNull(message = "rol es obligatorio (CUSTOMER o DISTRIBUTOR)")
         UsuarioRol rol,
 
         @Schema(description = "Estado de la cuenta", example = "ACTIVO")

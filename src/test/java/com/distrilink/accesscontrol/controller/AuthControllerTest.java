@@ -52,7 +52,7 @@ class AuthControllerTest {
             """;
 
     private UsuarioResponse usuario() {
-        return new UsuarioResponse(1L, "Tienda La Esquina", "tienda@correo.com", UsuarioRol.CLIENTE,
+        return new UsuarioResponse(1L, "Tienda La Esquina", "tienda@correo.com", UsuarioRol.CUSTOMER,
                 UsuarioEstado.ACTIVO, LocalDateTime.now(), LocalDateTime.now());
     }
 
