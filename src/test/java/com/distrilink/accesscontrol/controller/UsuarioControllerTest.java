@@ -59,12 +59,12 @@ class UsuarioControllerTest {
               "nombre": "Tienda La Esquina",
               "correo": "tienda@correo.com",
               "contrasena": "Clave1234",
-              "rol": "CLIENTE"
+              "rol": "CUSTOMER"
             }
             """;
 
     private UsuarioResponse response() {
-        return new UsuarioResponse(1L, "Tienda La Esquina", "tienda@correo.com", UsuarioRol.CLIENTE,
+        return new UsuarioResponse(1L, "Tienda La Esquina", "tienda@correo.com", UsuarioRol.CUSTOMER,
                 UsuarioEstado.ACTIVO, LocalDateTime.now(), LocalDateTime.now());
     }
 
@@ -85,7 +85,7 @@ class UsuarioControllerTest {
                 .andExpect(header().string("Location", "/api/users/1"))
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.id").value(1))
-                .andExpect(jsonPath("$.data.rol").value("CLIENTE"))
+                .andExpect(jsonPath("$.data.rol").value("CUSTOMER"))
                 .andExpect(jsonPath("$.data.contrasena").doesNotExist())
                 .andExpect(jsonPath("$.error").value(nullValue()))
                 .andExpect(jsonPath("$.meta.apiVersion").value("v1.0"));
@@ -94,7 +94,7 @@ class UsuarioControllerTest {
     @Test
     void registro_conVariosCamposInvalidos_devuelve400ConCadaCampo() throws Exception {
         String invalid = """
-                { "nombre": "", "correo": "esto-no-es-un-correo", "contrasena": "corta1", "rol": "CLIENTE" }
+                { "nombre": "", "correo": "esto-no-es-un-correo", "contrasena": "corta1", "rol": "CUSTOMER" }
                 """;
 
         mvc.perform(post("/api/users").contentType(MediaType.APPLICATION_JSON).content(invalid))
@@ -142,7 +142,7 @@ class UsuarioControllerTest {
     void consultar_miPropiaCuenta_devuelve200() throws Exception {
         when(service.findById(1L)).thenReturn(response());
 
-        mvc.perform(get("/api/users/1").with(usuario(1, "CLIENTE")))
+        mvc.perform(get("/api/users/1").with(usuario(1, "CUSTOMER")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.correo").value("tienda@correo.com"));
@@ -150,7 +150,7 @@ class UsuarioControllerTest {
 
     @Test
     void consultar_laCuentaDeOtro_devuelve403() throws Exception {
-        mvc.perform(get("/api/users/2").with(usuario(1, "CLIENTE")))
+        mvc.perform(get("/api/users/2").with(usuario(1, "CUSTOMER")))
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.error.code").value("FORBIDDEN"));
         verify(service, never()).findById(2L);
@@ -160,14 +160,14 @@ class UsuarioControllerTest {
     void consultar_miCuentaQueYaNoExiste_devuelve404() throws Exception {
         when(service.findById(9L)).thenThrow(new UsuarioNotFoundException(9L));
 
-        mvc.perform(get("/api/users/9").with(usuario(9, "CLIENTE")))
+        mvc.perform(get("/api/users/9").with(usuario(9, "CUSTOMER")))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.error.code").value("RESOURCE_NOT_FOUND"));
     }
 
     @Test
     void listar_comoCliente_devuelve403() throws Exception {
-        mvc.perform(get("/api/users").with(usuario(1, "CLIENTE")))
+        mvc.perform(get("/api/users").with(usuario(1, "CUSTOMER")))
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.error.code").value("FORBIDDEN"));
     }
@@ -176,14 +176,14 @@ class UsuarioControllerTest {
     void listar_comoDistribuidor_devuelve200ConLaLista() throws Exception {
         when(service.findAll(null, null)).thenReturn(List.of(response()));
 
-        mvc.perform(get("/api/users").with(usuario(7, "DISTRIBUIDOR")))
+        mvc.perform(get("/api/users").with(usuario(7, "DISTRIBUTOR")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data[0].id").value(1));
     }
 
     @Test
     void desactivar_miCuenta_devuelve200ConDataNull() throws Exception {
-        mvc.perform(delete("/api/users/1").with(usuario(1, "CLIENTE")))
+        mvc.perform(delete("/api/users/1").with(usuario(1, "CUSTOMER")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data").value(nullValue()));

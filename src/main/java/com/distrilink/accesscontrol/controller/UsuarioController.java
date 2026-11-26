@@ -36,7 +36,7 @@ import java.util.List;
  *
  * Reglas de acceso (ver SecurityConfig):
  *  - POST /api/users          público (registro)
- *  - GET  /api/users          solo DISTRIBUIDOR
+ *  - GET  /api/users          solo DISTRIBUTOR
  *  - GET/PUT/DELETE /{id}     solo el dueño de la cuenta (el id del token debe ser el mismo)
  */
 @RestController
@@ -57,9 +57,9 @@ public class UsuarioController {
 
     @GetMapping
     @SecurityRequirement(name = "bearerAuth")
-    @Operation(summary = "Listar usuarios (solo DISTRIBUIDOR)", description = "Los filtros por rol y estado son opcionales")
+    @Operation(summary = "Listar usuarios (solo DISTRIBUTOR)", description = "Los filtros por rol y estado son opcionales")
     public ResponseEntity<ApiResponse<List<UsuarioResponse>>> findAll(
-            @Parameter(description = "Filtrar por rol", example = "CLIENTE")
+            @Parameter(description = "Filtrar por rol", example = "CUSTOMER")
             @RequestParam(required = false) UsuarioRol rol,
             @Parameter(description = "Filtrar por estado", example = "ACTIVO")
             @RequestParam(required = false) UsuarioEstado estado) {

@@ -16,7 +16,7 @@ import java.time.temporal.ChronoUnit;
  * Crea el JWT que recibe el usuario al iniciar sesión (contrato del equipo):
  *
  * <pre>
- * { "sub": "15", "email": "...", "name": "...", "role": "CLIENTE",
+ * { "sub": "15", "email": "...", "name": "...", "role": "CUSTOMER",
  *   "iss": "distrilink-access-control", "iat": ..., "exp": ... }
  * </pre>
  *

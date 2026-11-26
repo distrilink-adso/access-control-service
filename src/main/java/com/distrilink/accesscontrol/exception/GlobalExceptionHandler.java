@@ -44,7 +44,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleUnreadable(HttpMessageNotReadableException ex) {
         return build(HttpStatus.BAD_REQUEST, ErrorCode.MALFORMED_REQUEST,
                 "El cuerpo de la petición no es válido. Revisa el JSON y los valores permitidos "
-                        + "(rol: CLIENTE o DISTRIBUIDOR; estado: ACTIVO, INACTIVO o BLOQUEADO)", null);
+                        + "(rol: CUSTOMER o DISTRIBUTOR; estado: ACTIVO, INACTIVO o BLOQUEADO)", null);
     }
 
     /** 400: un parámetro de la URL no tiene el tipo esperado (por ejemplo, /api/users/abc). */
